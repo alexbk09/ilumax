@@ -2,13 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, ChevronRight, Globe2, LayoutDashboard, Link2, MapPin, MessageCircle, Paintbrush, Palette, Plus, Receipt, Save, Trash2, Upload, X } from 'lucide-react'
+import { Building2, ChevronRight, Globe2, Home, LayoutDashboard, Link2, MapPin, MessageCircle, Paintbrush, Palette, Plus, Receipt, Save, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { FormInput, FormSubmitButton, FormTextarea } from '@/components/ui/form-field'
 import { confirmDelete } from '@/components/confirm-dialog'
 import { cn } from '@/lib/utils'
 import { ThemeSettingsManager } from '@/components/theme-settings-manager'
 import { DEFAULT_THEME, type ThemeConfig } from '@/lib/theme'
+import { HomepageConfigManager } from '@/components/homepage-config-manager'
+import { StudioConfigManager } from '@/components/studio-config-manager'
+import { PortadaConfigManager } from '@/components/portada-config-manager'
+import { DEFAULT_HOMEPAGE_CONFIG, normalizeHomepageConfig, type HomepageConfig } from '@/lib/homepage-config'
 
 // ---------- Tipos (espejo de /services/site-settings) ----------
 type NavLink = { href: string; label: string; highlight?: boolean }
@@ -32,12 +36,14 @@ type SiteSettingsPayload = {
   footer_texts: Record<string, unknown>
   social_links: Record<string, unknown>
   theme: ThemeConfig
+  homepage_config: HomepageConfig
 }
 
 // ---------- Íconos por sección ----------
 const SECTIONS = [
   { key: 'marca', label: 'Marca', icon: Building2 },
   { key: 'menu', label: 'Menú', icon: Link2 },
+  { key: 'inicio', label: 'Inicio', icon: Home },
   { key: 'portada', label: 'Portada', icon: LayoutDashboard },
   { key: 'studio', label: 'Studio', icon: Palette },
   { key: 'contacto', label: 'Contacto', icon: MessageCircle },
@@ -70,6 +76,7 @@ export function SiteSettingsManager({ initialSettings }: { initialSettings: Site
   const [form, setForm] = useState<SiteSettingsPayload>({
     ...initialSettings,
     theme: { ...DEFAULT_THEME, ...(initialSettings.theme ?? {}) },
+    homepage_config: normalizeHomepageConfig(initialSettings.homepage_config ?? {}),
   })
   const [active, setActive] = useState<SectionKey>('marca')
   const [saving, setSaving] = useState(false)
@@ -306,13 +313,14 @@ export function SiteSettingsManager({ initialSettings }: { initialSettings: Site
     )
   }
 
-  /** Sección: Portada (hero). */
+  /** Sección: Portada (hero) — textos, imagen y diseño visual. */
   function renderPortada() {
     const hero = form.hero_texts as Record<string, string>
     const stats = Array.isArray(hero.stats) ? (hero.stats as Record<string, string>[]) : []
     const heroImage = (form.hero_images as Record<string, string>).main ?? ''
     return (
       <div className="grid gap-5">
+        <PortadaConfigManager value={form.homepage_config.hero} onChange={(heroCfg) => setForm((f) => ({ ...f, homepage_config: { ...f.homepage_config, hero: heroCfg } }))} />
         <div className="grid gap-4 sm:grid-cols-2">
           <FormInput label="Eyebrow" value={hero.eyebrow ?? ''} onChange={(e) => setJsonField('hero_texts', 'eyebrow', e.target.value)} />
           <FormInput label="Título" value={hero.title ?? ''} onChange={(e) => setJsonField('hero_texts', 'title', e.target.value)} hint="La parte resaltada se separa en el campo Título resaltado" />
@@ -380,6 +388,7 @@ export function SiteSettingsManager({ initialSettings }: { initialSettings: Site
     const items = Array.isArray(studio.items) ? (studio.items as Record<string, string>[]) : []
     return (
       <div className="grid gap-5">
+        <StudioConfigManager value={form.homepage_config.studio} onChange={(studioCfg) => setForm((f) => ({ ...f, homepage_config: { ...f.homepage_config, studio: studioCfg } }))} />
         <div className="grid gap-4 sm:grid-cols-2">
           <FormInput label="Eyebrow" value={String(studio.eyebrow ?? '')} onChange={(e) => setJsonField('studio_texts', 'eyebrow', e.target.value)} />
           <FormInput label="Título" value={String(studio.title ?? '')} onChange={(e) => setJsonField('studio_texts', 'title', e.target.value)} />
@@ -458,11 +467,24 @@ export function SiteSettingsManager({ initialSettings }: { initialSettings: Site
     )
   }
 
+  /** Sección: Inicio personalizable con preview en vivo. */
+  function renderInicio() {
+    const hero = form.hero_texts as Record<string, string>
+    const heroImage = (form.hero_images as Record<string, string>).main ?? ''
+    return (
+      <div className="grid gap-5">
+        <p className="text-sm text-muted-foreground">Personaliza el layout de la portada, el fondo y agrega segmentos con imagen + texto, estadísticas, CTA o frases. El preview se actualiza en vivo.</p>
+        <HomepageConfigManager value={form.homepage_config} onChange={(homepage_config) => setForm((f) => ({ ...f, homepage_config }))} heroTexts={hero} heroImage={heroImage} />
+      </div>
+    )
+  }
+
   /** Renderiza la sección activa. */
   function renderSection() {
     switch (active) {
       case 'marca': return renderMarca()
       case 'menu': return renderMenu()
+      case 'inicio': return renderInicio()
       case 'portada': return renderPortada()
       case 'studio': return renderStudio()
       case 'contacto': return renderContacto()

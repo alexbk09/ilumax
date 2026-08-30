@@ -1,6 +1,7 @@
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createPublicClient } from '@/lib/supabase/public'
 import { DEFAULT_THEME, type ThemeConfig } from '@/lib/theme'
+import { DEFAULT_HOMEPAGE_CONFIG, normalizeHomepageConfig, type HomepageConfig } from '@/lib/homepage-config'
 
 /**
  * Servicio de configuración del sitio.
@@ -87,6 +88,8 @@ export type SiteSettings = {
   contact_texts: ContactTexts
   footer_texts: FooterTexts
   social_links: SocialLinks
+  /** Personalización del inicio: layout de portada y segmentos apilables. */
+  homepage_config: HomepageConfig
 }
 
 /** Valores por defecto de una fila de site_settings (para el mapa seguro). */
@@ -113,6 +116,7 @@ function mapSettings(row: any, fallback: Partial<SiteSettings> = {}): SiteSettin
     contact_texts: row?.contact_texts ?? fallback.contact_texts ?? {},
     footer_texts: row?.footer_texts ?? fallback.footer_texts ?? {},
     social_links: row?.social_links ?? fallback.social_links ?? {},
+    homepage_config: normalizeHomepageConfig(row?.homepage_config ?? fallback.homepage_config ?? {}),
   }
 }
 
@@ -185,6 +189,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     email: 'mailto:hola@ilumax.ve',
   },
   theme: DEFAULT_THEME,
+  homepage_config: DEFAULT_HOMEPAGE_CONFIG,
 }
 
 /**
@@ -252,7 +257,7 @@ export async function updateSiteSettings(payload: Partial<SiteSettings>) {
 
   // Columnas JSONB: se copian tal cual (objetos/arreglos).
   const jsonb: Record<string, unknown> = {}
-  for (const key of ['nav_links', 'hero_texts', 'hero_images', 'studio_texts', 'contact_texts', 'footer_texts', 'social_links', 'theme'] as const) {
+  for (const key of ['nav_links', 'hero_texts', 'hero_images', 'studio_texts', 'contact_texts', 'footer_texts', 'social_links', 'theme', 'homepage_config'] as const) {
     if (payload[key] !== undefined) jsonb[key] = payload[key]
   }
 
