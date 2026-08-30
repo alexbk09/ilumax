@@ -47,3 +47,24 @@ export const IVA_RATE = 0.16
 
 /** Slug del módulo "Ajuste de Margen y Control de Pérdidas" para permisos. */
 export const MARGIN_ADJUSTMENT_MODULE_SLUG = 'ajustes_precios'
+
+// ── Módulos activos del sistema (controlados por .env) ──────────
+// Si el negocio vende solo comercio, restaurante o servicios (o todos),
+// estas constantes determinan qué secciones se muestran en el admin y
+// en el catálogo público. Leídas de NEXT_PUBLIC_MODULE_* (SI/NO).
+// `comercio` está activo por defecto si no se define la variable.
+
+/** Módulos de negocio activos según .env. */
+export const ACTIVE_MODULES = {
+  comercio: process.env.NEXT_PUBLIC_MODULE_COMERCIO !== 'NO',
+  restaurante: process.env.NEXT_PUBLIC_MODULE_RESTAURANTE === 'SI',
+  servicios: process.env.NEXT_PUBLIC_MODULE_SERVICIOS === 'SI',
+} as const
+
+/** Lista de grupos de módulos visibles en el menú del admin (por ACTIVE_MODULES). */
+export const ACTIVE_ADMIN_NAV_GROUPS = {
+  // 'Catálogo' siempre existe (productos/categorías/marcas/proveedores).
+  // 'Restaurante' y 'Servicios' solo si su flag está en SI.
+  restaurante: ACTIVE_MODULES.restaurante,
+  servicios: ACTIVE_MODULES.servicios,
+} as const
