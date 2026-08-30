@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { UserMenu } from '@/components/user-menu'
 import { resetBodyScroll } from '@/lib/scroll-lock'
+import { getInitials } from '@/lib/utils'
 
 /** Item individual del menú de navegación del panel. */
 type NavItem = { href: string; label: string; icon: LucideIcon }
@@ -96,14 +97,14 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
  * El UserMenu se renderiza por separado: en el header del sidebar de
  * escritorio y en la barra superior móvil.
  */
-function AdminNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+function AdminNav({ pathname, onNavigate, companyName = 'ilumaX' }: { pathname: string; onNavigate?: () => void; companyName?: string }) {
   return (
     <>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-2xl bg-accent font-mono font-black text-primary">iX</span>
+          <span className="grid size-10 place-items-center rounded-2xl bg-accent font-mono font-black text-primary">{getInitials(companyName)}</span>
           <div>
-            <p className="font-semibold tracking-tight">iluma<span className="text-accent-foreground">X</span></p>
+            <p className="font-semibold tracking-tight">{companyName}</p>
             <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Panel de control</p>
           </div>
         </div>
@@ -170,9 +171,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-border bg-card p-6 lg:flex">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-2xl bg-accent font-mono font-black text-primary">iX</span>
+          <span className="grid size-10 place-items-center rounded-2xl bg-accent font-mono font-black text-primary">{getInitials(siteFooter?.brand?.name ?? 'ilumaX')}</span>
           <div>
-            <p className="font-semibold tracking-tight">iluma<span className="text-accent-foreground">X</span></p>
+            <p className="font-semibold tracking-tight">{siteFooter?.brand?.name ?? 'ilumaX'}</p>
             <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Panel de control</p>
           </div>
         </div>
@@ -209,7 +210,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <button aria-label="Cerrar menú" onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-muted">
         <X size={18} />
       </button>
-      <AdminNav pathname={pathname} onNavigate={() => setSidebarOpen(false)} />
+      <AdminNav pathname={pathname} onNavigate={() => setSidebarOpen(false)} companyName={siteFooter?.brand?.name} />
     </aside>
 
     {/* Barra superior móvil con botón hamburguesa y menú de usuario */}
@@ -218,7 +219,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <button aria-label="Abrir menú" onClick={() => setSidebarOpen(true)} className="grid size-10 place-items-center rounded-full border border-border text-foreground">
           <Menu size={18} />
         </button>
-        <span className="grid size-9 place-items-center rounded-xl bg-accent font-mono text-sm font-black text-primary">iX</span>
+        <span className="grid size-9 place-items-center rounded-xl bg-accent font-mono text-sm font-black text-primary">{getInitials(siteFooter?.brand?.name ?? 'ilumaX')}</span>
       </div>
       <div className="flex items-center gap-2">
         <p className="hidden font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:block">Panel de control</p>

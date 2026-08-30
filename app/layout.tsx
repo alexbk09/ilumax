@@ -58,7 +58,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <ScrollReset />
         <ToastProvider />
         {process.env.NODE_ENV === 'production' && <Analytics />}
-        <WhatsAppButton />
+        <WhatsAppButton whatsappNumber={settings.whatsapp_number} />
       </body>
     </html>
   )
