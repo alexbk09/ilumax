@@ -16,6 +16,10 @@ export type RequestItem = {
   product_name: string
   quantity: number
   unit_price_usd: number
+  /** Unidad vendida (u, g, kg...). */
+  unit_label?: string | null
+  /** Peso total en gramos (solo si el producto es por peso). */
+  weight_grams?: number | null
 }
 
 export type RequestStatusHistory = {
@@ -65,6 +69,8 @@ export type Request = {
 export type NewRequestItem = {
   product_id: string
   quantity: number
+  /** Unidad del ítem: 'g', 'kg' o 'u'. Default: 'u'. */
+  unit?: string
 }
 
 // ---------- Solicitudes del cliente ----------
@@ -87,7 +93,7 @@ export async function createRequest(userId: string, items: NewRequestItem[]): Pr
   const ids = items.map((item) => item.product_id).filter(Boolean)
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('id,name,price_usd,stock')
+    .select('id,name,price_usd,stock,pricing_type,price_per_gram_usd,stock_grams,min_order_grams,unit_label')
     .in('id', ids)
   if (productsError) return { error: 'products_unavailable' }
 

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Plus } from 'lucide-react'
 import { LOW_STOCK_ALERT } from '@/lib/constants'
 import { formatBolivars, moneyUsd } from '@/lib/currency'
+import { formatWeight } from '@/lib/price-calculator'
 
 /** Tipo mínimo de producto que recibe la card. */
 export type CardProduct = {
@@ -20,6 +21,24 @@ export type CardProduct = {
   specifications?: Record<string, string>
   category_id?: string | null
   featured?: boolean
+  /** Tipo de precio: 'unit' (por unidad) o 'weight' (por peso). */
+  pricing_type?: 'unit' | 'weight'
+  /** Precio por gramo (solo si pricing_type = 'weight'). */
+  price_per_gram_usd?: number
+  /** Precio por kilo (solo si pricing_type = 'weight'). */
+  price_per_kilo_usd?: number
+  /** Stock en gramos (solo si pricing_type = 'weight'). */
+  stock_grams?: number
+  /** Peso mínimo de compra en gramos (solo si pricing_type = 'weight'). */
+  min_order_grams?: number
+  /** Etiqueta de unidad (u, g, kg…). */
+  unit_label?: string
+  /** Descuento por mayoreo (%) mostrado como incentivo. */
+  bulk_discount_percent?: number
+  /** Umbral de stock bajo (configurable). */
+  low_stock_threshold?: number
+  /** Peso en gramos de una unidad (ficha técnica). */
+  weight_grams?: number | null
   categories?: { id: string; name: string; slug: string; description: string | null }[]
   images?: { id: string; url: string; alt_text: string | null; sort_order: number; color_name?: string | null }[]
 }
@@ -35,6 +54,36 @@ export function colorImagesFor(product: CardProduct) {
 
 /** Devuelve la categoría visible de un producto. */
 export const categoryFor = (p: CardProduct) => p.categories?.[0]?.name ?? 'General'
+
+/** Formatea el precio de un producto por peso: "$X.XX /g · $Y /kg". */
+function priceLabel(product: CardProduct) {
+  const isWeight = product.pricing_type === 'weight'
+  if (isWeight) {
+    const perGram = Number(product.price_per_gram_usd ?? 0)
+    const perKilo = Number(product.price_per_kilo_usd ?? 0)
+    if (perGram > 0) return `${moneyUsd(perGram)} /g`
+    if (perKilo > 0) return `${moneyUsd(perKilo)} /kg`
+  }
+  return moneyUsd(product.price_usd)
+}
+
+/** Devuelve el stock visible de un producto (gramos o unidades). */
+function stockLabel(product: CardProduct) {
+  const isWeight = product.pricing_type === 'weight'
+  if (isWeight) return `${formatWeight(product.stock_grams ?? 0)} disponibles`
+  const unit = product.unit_label || 'u'
+  return `${product.stock} ${unit} en stock`
+}
+
+/** Es stock bajo (unidad: umbral configurable o LOW_STOCK_ALERT; peso: < 10 mínimos). */
+function isLowStock(product: CardProduct) {
+  if (product.pricing_type === 'weight') {
+    const min = Number(product.min_order_grams) || 0
+    return min > 0 && Number(product.stock_grams) < min * 10
+  }
+  const threshold = product.low_stock_threshold ?? LOW_STOCK_ALERT
+  return product.stock < threshold
+}
 
 /**
  * Card de producto reutilizable.
@@ -57,7 +106,12 @@ export function ProductCard({ product, rate, onAdd, onViewDetails }: {
         ) : (
           <div className="grid aspect-[1.1] w-full place-items-center bg-muted text-muted-foreground">Sin imagen</div>
         )}
-        <span className={`absolute left-4 top-4 rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-widest ${product.stock < LOW_STOCK_ALERT ? 'bg-amber-100 text-amber-700' : 'bg-card/90 text-foreground'}`}>{product.stock} en stock</span>
+        <span className={`absolute left-4 top-4 rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-widest ${isLowStock(product) ? 'bg-amber-100 text-amber-700' : 'bg-card/90 text-foreground'}`}>{stockLabel(product)}</span>
+        {Number(product.bulk_discount_percent ?? 0) > 0 && (
+          <span className="absolute right-4 top-4 rounded-full bg-emerald-500/90 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-white">
+            -{product.bulk_discount_percent}% mayoreo
+          </span>
+        )}
       </button>
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
@@ -110,7 +164,8 @@ export function ProductCard({ product, rate, onAdd, onViewDetails }: {
 
         <div className="mt-5 flex items-end justify-between">
           <div>
-            <p className="font-semibold">{moneyUsd(product.price_usd)}</p>
+            {/* Precio según tipo (por unidad o por gramo/kilo) */}
+            <p className="font-semibold">{priceLabel(product)}</p>
             <p className="text-xs text-muted-foreground">{formatBolivars(product.price_usd, rate)}</p>
           </div>
           <button onClick={() => onViewDetails(product)} className="text-xs text-muted-foreground underline underline-offset-4">Ver detalles</button>

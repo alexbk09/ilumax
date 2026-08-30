@@ -363,7 +363,12 @@ export function CatalogView({
       </main>
 
       {selected && (
-        <ProductDetailModal product={selected as CardProduct} rate={exchangeRate} onClose={() => setSelected(null)} onAdd={add} />
+        <ProductDetailModal
+          product={selected as CardProduct}
+          rate={exchangeRate}
+          onClose={() => setSelected(null)}
+          onAdd={(product, unit, quantity) => add(product, unit, quantity)}
+        />
       )}
 
       <SiteFooter footer={footer} brand={{ name: brand?.name, address: brandAddress }} social={social} />

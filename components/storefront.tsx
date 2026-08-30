@@ -370,7 +370,12 @@ export function Storefront({ initialProducts, settings }: { initialProducts?: Pr
     <SiteFooter footer={cfg.footer} brand={{ name: brand.name, address: brand.address }} social={cfg.social} />
 
     {selected && (
-      <ProductDetailModal product={selected as CardProduct} rate={exchangeRate} onClose={() => setSelected(null)} onAdd={add} />
+      <ProductDetailModal
+        product={selected as CardProduct}
+        rate={exchangeRate}
+        onClose={() => setSelected(null)}
+        onAdd={(product, unit, quantity) => add(product, unit, quantity)}
+      />
     )}
 
     <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} cart={cart} onChange={change} total={total} onSubmit={requestOrder} submitting={submitting} requested={requested} exchangeRate={exchangeRate} />

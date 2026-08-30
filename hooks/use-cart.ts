@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { getBrowserUser } from '@/services/auth-client'
 import { WHATSAPP_NUMBER } from '@/lib/constants'
 import { formatBolivars, moneyUsd } from '@/lib/currency'
+import { toGrams } from '@/lib/price-calculator'
 
 /** Tipo de producto compatible con el carrito (portada y catálogo). */
 export type CartProduct = {
@@ -19,12 +20,32 @@ export type CartProduct = {
   specifications?: Record<string, string>
   category_id?: string | null
   featured?: boolean
+  /** Tipo de precio: 'unit' (por unidad) o 'weight' (por peso). */
+  pricing_type?: 'unit' | 'weight'
+  /** Precio por gramo (solo si pricing_type = 'weight'). */
+  price_per_gram_usd?: number
+  /** Precio por kilo (solo si pricing_type = 'weight'). */
+  price_per_kilo_usd?: number
+  /** Stock en gramos (solo si pricing_type = 'weight'). */
+  stock_grams?: number
+  /** Peso mínimo de compra en gramos (solo si pricing_type = 'weight'). */
+  min_order_grams?: number
+  /** Etiqueta de unidad (u, g, kg…). */
+  unit_label?: string
+  /** Descuento por mayoreo (%) mostrado como incentivo. */
+  bulk_discount_percent?: number
   categories?: { id: string; name: string; slug: string; description: string | null }[]
   images?: { id: string; url: string; alt_text: string | null; sort_order: number }[]
 }
 
-/** Ítem del carrito: producto + cantidad. */
-export type CartItem = CartProduct & { quantity: number }
+/** Ítem del carrito: producto + cantidad + unidad seleccionada. */
+export type CartItem = CartProduct & {
+  quantity: number
+  /** Unidad de la cantidad: 'g', 'kg' o 'u'. Default: 'u'. */
+  unit?: string
+  /** Gramos totales (solo si el producto es por peso). */
+  weight_grams?: number | null
+}
 
 const CART_STORAGE_KEY = 'ilumax-cart'
 
@@ -66,13 +87,47 @@ export function useCart(exchangeRate: number) {
     }
   }, [cart])
 
-  /** Agrega un producto al carrito respetando el stock disponible. */
-  const add = useCallback((product: CartProduct) => {
+  /** Precio por línea según el tipo (peso = gramos × precio/gramo; unidad = cantidad × precio). */
+  function lineTotal(item: CartItem): number {
+    const isWeight = item.pricing_type === 'weight'
+    if (isWeight) {
+      const perGram = Number(item.price_per_gram_usd) || 0
+      const grams = item.weight_grams ?? toGrams(item.quantity, item.unit || 'g')
+      return grams * perGram
+    }
+    return item.price_usd * item.quantity
+  }
+
+  /**
+   * Agrega un producto al carrito respetando el stock disponible.
+   * Para 'unit', quantity = cantidad de unidades.
+   * Para 'weight', unit = 'g'|'kg' y quantity = peso en esa unidad.
+   */
+  const add = useCallback((product: CartProduct, unit = 'u', quantity?: number) => {
     setCart((current) => {
       const found = current.find((item) => item.id === product.id)
+
+      // Producto por peso: la cantidad se maneja en gramos
+      if (product.pricing_type === 'weight') {
+        const minGrams = Number(product.min_order_grams) || 0
+        const maxGrams = Number(product.stock_grams) || 0
+        // Determina gramos: si el modal mandó cantidad explícita la usa (g/kg).
+        const explicitGrams = quantity != null
+          ? toGrams(quantity, unit)
+          : (found?.weight_grams ?? Math.max(minGrams, 100))
+        // Si ya está en el carrito sin cantidad explícita, agrega otro paso.
+        const addGrams = quantity == null && found?.weight_grams ? Math.max(minGrams, 100) : 0
+        const newGrams = Math.min(Math.max(explicitGrams + addGrams, minGrams), maxGrams)
+        return found
+          ? current.map((item) => (item.id === product.id ? { ...item, weight_grams: newGrams, quantity: newGrams, unit: 'g' } : item))
+          : [...current, { ...product, quantity: newGrams, weight_grams: newGrams, unit: 'g' }]
+      }
+
+      // Producto por unidad
+      const addQty = quantity ?? 1
       return found
-        ? current.map((item) => (item.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) } : item))
-        : [...current, { ...product, quantity: 1 }]
+        ? current.map((item) => (item.id === product.id ? { ...item, quantity: Math.min(item.quantity + addQty, product.stock) } : item))
+        : [...current, { ...product, quantity: Math.min(Math.max(1, Math.floor(addQty)), product.stock), unit: 'u' }]
     })
     setCartOpen(true)
     toast.success(`${product.name} agregado a tu solicitud`)
@@ -80,14 +135,49 @@ export function useCart(exchangeRate: number) {
 
   /** Cambia la cantidad de un ítem; si llega a 0 se elimina del carrito. */
   const change = useCallback((id: string, amount: number) => {
-    setCart((current) => current.map((item) => (item.id === id ? { ...item, quantity: item.quantity + amount } : item)).filter((item) => item.quantity > 0))
+    setCart((current) =>
+      current
+        .map((item) => {
+          const isWeight = item.pricing_type === 'weight'
+          if (isWeight) {
+            // Para productos por peso, el incremento es de 100g (o el mínimo)
+            const step = Math.max(Number(item.min_order_grams) || 0, 100)
+            const newGrams = Math.min(
+              Math.max((item.weight_grams ?? 0) + step * amount, 0),
+              Number(item.stock_grams) || 0,
+            )
+            return { ...item, weight_grams: newGrams, quantity: newGrams }
+          }
+          return { ...item, quantity: Math.max(0, item.quantity + amount) }
+        })
+        .filter((item) => item.quantity > 0 && (item.weight_grams ?? item.quantity) > 0),
+    )
+  }, [])
+
+  /** Actualiza la cantidad de un ítem a un valor explícito (usado en el modal). */
+  const setQuantity = useCallback((id: string, quantity: number, unit = 'u') => {
+    setCart((current) =>
+      current.map((item) => {
+        if (item.id !== id) return item
+        const isWeight = item.pricing_type === 'weight'
+        if (isWeight) {
+          const grams = toGrams(quantity, unit)
+          const capped = Math.min(Math.max(grams, Number(item.min_order_grams) || 0), Number(item.stock_grams) || 0)
+          return { ...item, quantity: capped, weight_grams: capped, unit: 'g' }
+        }
+        return { ...item, quantity: Math.max(1, Math.floor(quantity)) }
+      }),
+    )
   }, [])
 
   /** Total en USD del carrito. */
-  const total = useMemo(() => cart.reduce((sum, item) => sum + item.price_usd * item.quantity, 0), [cart])
+  const total = useMemo(() => cart.reduce((sum, item) => sum + lineTotal(item), 0), [cart])
 
-  /** Cantidad total de piezas en el carrito. */
-  const count = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart])
+  /** Cantidad total de piezas en el carrito (gramos para peso, unidades para unidad). */
+  const count = useMemo(() => cart.reduce((sum, item) => {
+    const value = item.pricing_type === 'weight' ? (item.weight_grams ?? item.quantity) : item.quantity
+    return sum + value
+  }, 0), [cart])
 
   /** Envía la solicitud actual por WhatsApp (requiere sesión iniciada). */
   const requestOrder = useCallback(async () => {
@@ -97,7 +187,7 @@ export function useCart(exchangeRate: number) {
     const response = await fetch('/api/solicitudes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart.map((item) => ({ product_id: item.id, quantity: item.quantity })) }),
+      body: JSON.stringify({ items: cart.map((item) => ({ product_id: item.id, quantity: item.quantity, unit: item.unit || 'u' })) }),
     })
     const result = await response.json().catch(() => ({}))
     setSubmitting(false)
@@ -107,5 +197,5 @@ export function useCart(exchangeRate: number) {
     setCart([]); setCartOpen(false); toast.success('Solicitud creada. Abriendo WhatsApp.')
   }, [cart, count, exchangeRate])
 
-  return { cart, add, change, total, count, cartOpen, setCartOpen, submitting, requested, requestOrder }
+  return { cart, add, change, setQuantity, total, count, cartOpen, setCartOpen, submitting, requested, requestOrder }
 }
