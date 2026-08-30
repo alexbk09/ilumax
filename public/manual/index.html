@@ -98,7 +98,7 @@ tailwind.config = {
       <div class="text-[13px] font-semibold px-3 pb-1 pt-4 text-slate-400 uppercase tracking-wide">Panel Administrativo</div>
       <a class="toc-link" href="#admin-acceso">9 · Acceso al panel</a>
       <a class="toc-link" href="#admin-resumen">10 · Resumen (KPIs)</a>
-      <a class="toc-link" href="#admin-productos">11 · Productos</a>
+      <a class="toc-link" href="#admin-productos">11 · Productos y unidades</a>
       <a class="toc-link" href="#admin-categorias">12 · Categorías</a>
       <a class="toc-link" href="#admin-marcas-proveedores">13 · Marcas y Proveedores</a>
       <a class="toc-link" href="#admin-usuarios">14 · Usuarios</a>
@@ -108,6 +108,8 @@ tailwind.config = {
       <a class="toc-link" href="#admin-roles">18 · Roles y permisos</a>
       <a class="toc-link" href="#admin-ajustes">19 · Ajuste de precios</a>
       <a class="toc-link" href="#admin-config">20 · Configuración del sitio</a>
+      <a class="toc-link" href="#admin-config-apariencia">20.1 · Apariencia y tema</a>
+      <a class="toc-link" href="#admin-config-portada">20.2 · Portada e inicio</a>
       <div class="text-[13px] font-semibold px-3 pb-1 pt-4 text-slate-400 uppercase tracking-wide">Referencia</div>
       <a class="toc-link" href="#flujos-completos">21 · Flujos completos</a>
       <a class="toc-link" href="#estados">22 · Estados del sistema</a>
@@ -181,6 +183,11 @@ tailwind.config = {
             <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Ajuste masivo de precios por tasa</span>
             <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Roles y permisos por módulo</span>
             <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Importación de productos por Excel</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Venta por unidad o por peso (gramos/kilos)</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Descuento por mayoreo (%)</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">SKU y código de barras</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Temas de color y presets visuales</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Editor visual de portada e inicio</span>
             <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Modo oscuro / claro</span>
             <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Diseño responsive (móvil / escritorio)</span>
           </div>
@@ -606,8 +613,76 @@ tailwind.config = {
       <!-- ── 11. PRODUCTOS ── -->
       <section id="admin-productos" class="section-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-8">
         <p class="font-mono text-xs uppercase tracking-[.25em] text-cyan-600 dark:text-cyan-400">Sección 11</p>
-        <h3 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight">Gestión de Productos</h3>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Administra el inventario completo: precio de venta, costo base, fotos, categorías, marca, proveedor, productos destacados, y la <strong>ficha física</strong> del producto (peso, tamaño y colores).</p>
+        <h3 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight">Gestión de Productos y Unidades</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Administra el inventario completo: precio de venta, costo base, fotos, categorías, marca, proveedor, productos destacados, la <strong>ficha física</strong> del producto (peso, tamaño y colores) y el <strong>tipo de venta</strong> (por unidad o por peso).</p>
+
+        <!-- ═══ UNIDADES: TIPO DE VENTA ═══ -->
+        <div class="mt-8 rounded-3xl border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-50/60 to-white dark:from-cyan-500/10 dark:to-slate-900 p-6 sm:p-8">
+          <div class="flex items-center gap-3">
+            <span class="grid size-12 place-items-center rounded-2xl bg-cyan-400 text-primary text-xl">⚖️</span>
+            <div>
+              <h4 class="text-xl font-black">Unidades de venta</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Cada producto se vende <strong>por unidad</strong> o <strong>por peso</strong>. El sistema se adapta automáticamente.</p>
+            </div>
+          </div>
+
+          <div class="mt-6 grid gap-4 md:grid-cols-2">
+            <!-- Por unidad -->
+            <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 p-5">
+              <div class="flex items-center gap-2">
+                <span class="grid size-9 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800">📦</span>
+                <div><h5 class="font-bold text-sm">Por unidad</h5><p class="text-xs text-slate-500">Venta tradicional · “u”</p></div>
+              </div>
+              <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Configuras <strong>precio USD</strong> y <strong>stock en unidades</strong> (ej: 25 paneles).</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> El cliente compra cantidades enteras <strong>1, 2, 3…</strong>.</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Etiqueta de stock: <em>“25 u en stock”</em>.</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Ideal para: lámparas, paneles LED, enchufes, reflectores.</li>
+              </ul>
+              <!-- Mockup tarjeta por unidad -->
+              <div class="mt-4 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/60 p-3">
+                  <div class="size-10 rounded-lg bg-gradient-to-br from-slate-200 to-slate-300 grid place-items-center text-[10px]">IMG</div>
+                  <div class="flex-1">
+                    <p class="text-[11px] font-semibold">Panel LED Orbis 24W</p>
+                    <p class="text-[10px] text-slate-400">$28.00 · Bs. 1.022,00</p>
+                  </div>
+                  <span class="badge bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">25 u en stock</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Por peso -->
+            <div class="rounded-2xl bg-white dark:bg-slate-900 border border-cyan-500/30 p-5">
+              <div class="flex items-center gap-2">
+                <span class="grid size-9 place-items-center rounded-xl bg-cyan-500/10 text-cyan-600">⚖️</span>
+                <div><h5 class="font-bold text-sm">Por peso</h5><p class="text-xs text-slate-500">Venta por gramos / kilos · “g / kg”</p></div>
+              </div>
+              <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Configuras <strong>precio por kilo USD</strong> (y se calcula el precio por gramo).</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> El cliente elige <strong>gramos (g) o kilos (kg)</strong> con un selector.</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Tiene <strong>mínimo de compra</strong> (ej: 500 g).</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Etiqueta de stock: <em>“1,5 kg disponibles”</em>.</li>
+                <li class="flex gap-2"><span class="text-cyan-500">✔</span> Ideal para: cables, perfiles, adhesivos, tubos de silicona.</li>
+              </ul>
+              <!-- Mockup tarjeta por peso -->
+              <div class="mt-4 rounded-xl border border-cyan-500/25 overflow-hidden">
+                <div class="flex items-center gap-3 bg-cyan-500/5 p-3">
+                  <div class="size-10 rounded-lg bg-gradient-to-br from-slate-200 to-slate-300 grid place-items-center text-[10px]">IMG</div>
+                  <div class="flex-1">
+                    <p class="text-[11px] font-semibold">Perfil aluminio 3m</p>
+                    <p class="text-[10px] text-slate-400">$6,50 /kg · mín. 500 g</p>
+                  </div>
+                  <span class="badge bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">1,5 kg disp.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 p-4 text-xs text-slate-600 dark:text-slate-300">
+            💡 <strong>Selector de unidad en el detalle del producto:</strong> cuando el producto es por peso, el cliente ve un interruptor <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">g</span> / <span class="badge bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">kg</span> para elegir cómo comprar, y el sistema valida que no baje del mínimo ni supere el stock en gramos.
+          </div>
+        </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div class="rounded-2xl border border-cyan-500/25 bg-cyan-50/60 dark:bg-cyan-500/5 p-5">
@@ -634,6 +709,14 @@ tailwind.config = {
             <h4 class="font-bold text-sm">⭐ Destacados</h4>
             <p class="mt-1 text-xs text-slate-500">Marca <strong>“featured”</strong> para mostrar el producto en la portada (hasta 6).</p>
           </div>
+          <div class="rounded-2xl border border-emerald-500/25 bg-emerald-50/60 dark:bg-emerald-500/5 p-5">
+            <h4 class="font-bold text-sm">🏷️ SKU y Código de barras</h4>
+            <p class="mt-1 text-xs text-slate-500">Identificadores únicos para controlar inventario y vender fácilmente desde el punto de venta.</p>
+          </div>
+          <div class="rounded-2xl border border-emerald-500/25 bg-emerald-50/60 dark:bg-emerald-500/5 p-5">
+            <h4 class="font-bold text-sm">📉 Descuento por mayoreo</h4>
+            <p class="mt-1 text-xs text-slate-500">Muestra un badge <span class="badge bg-emerald-500/15 text-emerald-700">-X% mayoreo</span> en la tarjeta para incentivar compras al mayor.</p>
+          </div>
         </div>
 
         <div class="mt-8 rounded-2xl border border-slate-200/70 dark:border-slate-700 overflow-hidden">
@@ -657,8 +740,8 @@ tailwind.config = {
 
         <div class="mt-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 p-5 text-sm text-slate-600 dark:text-slate-300">
           <strong class="text-cyan-600 dark:text-cyan-400">Columnas de la plantilla Excel:</strong>
-          <code class="mt-2 block text-xs leading-relaxed">nombre (obligatorio) · slug · descripcion · precio_usd · stock · categoria · featured (SI/NO) · image_url · marca · proveedor · costo_inicial · categoria_dos</code>
-          <p class="mt-2 text-xs">Si una categoría, marca o proveedor no existe, se crea automáticamente. La hoja <em>“Instrucciones”</em> te lo recuerda.</p>
+          <code class="mt-2 block text-xs leading-relaxed">nombre (obligatorio) · slug · descripcion · precio_usd · stock · categoria · featured (SI/NO) · image_url · marca · proveedor · costo_inicial · categoria_dos · pricing_type (unidad/peso) · price_per_kg_usd · min_grams · unit_label · sku · bar_code · bulk_discount_percent · disponible (SI/NO) · orden</code>
+          <p class="mt-2 text-xs">Si una categoría, marca o proveedor no existe, se crea automáticamente. La hoja <em>“Instrucciones”</em> te lo recuerda, incluyendo los nuevos campos de peso, unidad, SKU y mayoreo.</p>
         </div>
 
         <div class="mt-6 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/25 p-5">
@@ -987,35 +1070,181 @@ tailwind.config = {
       <section id="admin-config" class="section-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-8">
         <p class="font-mono text-xs uppercase tracking-[.25em] text-cyan-600 dark:text-cyan-400">Sección 20</p>
         <h3 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight">Configuración del sitio</h3>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Desde <code>/admin/configuracion</code> personalizas toda la tienda visual y funcionalmente.</p>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Desde <code>/admin/configuracion</code> personalizas toda la tienda visual y funcionalmente: marca, menú, portada, studio, contacto, footer, redes sociales, <strong>apariencia (tema de colores)</strong> y <strong>configuración de cotizaciones</strong>.</p>
 
-        <div class="mt-6 grid gap-4 md:grid-cols-2">
-          <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
-            <h4 class="font-bold text-sm">🏢 Marca y sitio</h4>
-            <ul class="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
-              <li class="flex gap-2"><span>✔</span> Nombre de la empresa y eslogan</li>
-              <li class="flex gap-2"><span>✔</span> Logo e ícono</li>
-              <li class="flex gap-2"><span>✔</span> Dirección, teléfono WhatsApp, correo, redes sociales</li>
-              <li class="flex gap-2"><span>✔</span> Enlaces del menú de navegación</li>
-              <li class="flex gap-2"><span>✔</span> Textos e imágenes de la portada (hero, studio, contacto)</li>
-              <li class="flex gap-2"><span>✔</span> Ubicación del mapa</li>
-              <li class="flex gap-2"><span>✔</span> Texto del pie de página</li>
-            </ul>
+        <!-- Panel de pestañas visual del configurador -->
+        <div class="mt-8 rounded-3xl border-2 border-slate-200/70 dark:border-slate-700 overflow-hidden">
+          <div class="flex flex-wrap items-center gap-2 border-b border-slate-200/70 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/40 px-5 py-4">
+            <span class="badge bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">🏢 Marca</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">🔗 Menú</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">🏠 Inicio</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">📋 Portada</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">🎨 Studio</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">💬 Contacto</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">📝 Footer</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">🌐 Redes</span>
+            <span class="badge bg-cyan-500/15 text-cyan-700 dark:text-cyan-300">🎨 Apariencia</span>
+            <span class="badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">📄 Cotizaciones</span>
           </div>
-          <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
-            <h4 class="font-bold text-sm">📄 Cotizaciones</h4>
-            <ul class="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
-              <li class="flex gap-2"><span>✔</span> Descuento por pago en efectivo en divisas (%)</li>
-              <li class="flex gap-2"><span>✔</span> Días de validez de la cotización</li>
-              <li class="flex gap-2"><span>✔</span> Nota por defecto en las cotizaciones</li>
-            </ul>
-            <div class="mt-4 rounded-xl bg-cyan-50 dark:bg-cyan-500/5 border border-cyan-500/20 p-3 text-xs text-slate-600 dark:text-slate-300">
-              💡 La configuración del emisor de facturas también se gestiona en su propio módulo: <em>Panel → Facturación</em>.
+          <div class="p-6">
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+                <h4 class="font-bold text-sm">🏢 Marca y sitio</h4>
+                <ul class="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                  <li class="flex gap-2"><span>✔</span> Nombre de la empresa y eslogan</li>
+                  <li class="flex gap-2"><span>✔</span> Logo e ícono</li>
+                  <li class="flex gap-2"><span>✔</span> Dirección, teléfono WhatsApp, correo, redes sociales</li>
+                  <li class="flex gap-2"><span>✔</span> Enlaces del menú de navegación</li>
+                  <li class="flex gap-2"><span>✔</span> Textos e imágenes de la portada (hero, studio, contacto)</li>
+                  <li class="flex gap-2"><span>✔</span> Ubicación del mapa</li>
+                  <li class="flex gap-2"><span>✔</span> Texto del pie de página</li>
+                </ul>
+              </div>
+              <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+                <h4 class="font-bold text-sm">📄 Cotizaciones</h4>
+                <ul class="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                  <li class="flex gap-2"><span>✔</span> Descuento por pago en efectivo en divisas (%)</li>
+                  <li class="flex gap-2"><span>✔</span> Días de validez de la cotización</li>
+                  <li class="flex gap-2"><span>✔</span> Nota por defecto en las cotizaciones</li>
+                </ul>
+                <div class="mt-4 rounded-xl bg-cyan-50 dark:bg-cyan-500/5 border border-cyan-500/20 p-3 text-xs text-slate-600 dark:text-slate-300">
+                  💡 La configuración del emisor de facturas también se gestiona en su propio módulo: <em>Panel → Facturación</em>.
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 p-4 text-xs text-slate-600 dark:text-slate-300">
+              ⚡ Los cambios se aplican con <strong>revalidación automática (≤ 5 min)</strong> en la tienda pública gracias al ISR de Next.js.
             </div>
           </div>
         </div>
-        <div class="mt-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 p-4 text-xs text-slate-600 dark:text-slate-300">
-          ⚡ Los cambios se aplican con <strong>revalidación automática (≤ 5 min)</strong> en la tienda pública gracias al ISR de Next.js.
+      </section>
+
+      <!-- ── 20.1 APARIENCIA Y TEMA ── -->
+      <section id="admin-config-apariencia" class="section-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-8">
+        <p class="font-mono text-xs uppercase tracking-[.25em] text-cyan-600 dark:text-cyan-400">Sección 20.1</p>
+        <h3 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight">Apariencia y tema de colores</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">El editor visual de <strong>tema</strong> permite cambiar los colores de toda la tienda con presets listos o colores personalizados, con <strong>vista previa en vivo</strong>.</p>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
+          <!-- Mockup presets -->
+          <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+            <h4 class="font-bold text-sm">🎨 Temas rápidos (presets)</h4>
+            <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div class="flex items-center gap-2 rounded-2xl border border-cyan-500/50 ring-2 ring-cyan-500/20 p-3">
+                <span class="flex -space-x-1.5"><span class="size-5 rounded-full border-2 border-white" style="background:#22d3ee"></span><span class="size-5 rounded-full border-2 border-white" style="background:#071d49"></span></span>
+                <span class="text-xs font-medium">Cian marino ✓</span>
+              </div>
+              <div class="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 p-3">
+                <span class="flex -space-x-1.5"><span class="size-5 rounded-full border-2 border-white" style="background:#0ea5e9"></span><span class="size-5 rounded-full border-2 border-white" style="background:#0f172a"></span></span>
+                <span class="text-xs font-medium">Azul océano</span>
+              </div>
+              <div class="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 p-3">
+                <span class="flex -space-x-1.5"><span class="size-5 rounded-full border-2 border-white" style="background:#10b981"></span><span class="size-5 rounded-full border-2 border-white" style="background:#064e3b"></span></span>
+                <span class="text-xs font-medium">Esmeralda</span>
+              </div>
+              <div class="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 p-3">
+                <span class="flex -space-x-1.5"><span class="size-5 rounded-full border-2 border-white" style="background:#f59e0b"></span><span class="size-5 rounded-full border-2 border-white" style="background:#78350f"></span></span>
+                <span class="text-xs font-medium">Ámbar</span>
+              </div>
+              <div class="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 p-3">
+                <span class="flex -space-x-1.5"><span class="size-5 rounded-full border-2 border-white" style="background:#ef4444"></span><span class="size-5 rounded-full border-2 border-white" style="background:#7f1d1d"></span></span>
+                <span class="text-xs font-medium">Rubí</span>
+              </div>
+              <div class="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 p-3">
+                <span class="flex -space-x-1.5"><span class="size-5 rounded-full border-2 border-white" style="background:#8b5cf6"></span><span class="size-5 rounded-full border-2 border-white" style="background:#312e81"></span></span>
+                <span class="text-xs font-medium">Violeta</span>
+              </div>
+            </div>
+            <div class="mt-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 p-4">
+              <p class="text-xs font-semibold">🎯 Color de marca inteligente</p>
+              <p class="mt-1 text-xs text-slate-500">Al elegir un color base, las variantes (fuerte, clara y texto sobre marca) se calculan automáticamente.</p>
+              <div class="mt-3 flex items-center gap-3">
+                <span class="grid size-10 place-items-center rounded-xl border" style="background:#22d3ee"></span>
+                <div class="flex-1 space-y-1.5">
+                  <div class="h-3.5 rounded-lg font-mono text-[10px] grid place-items-center text-white" style="background:#22d3ee">Color de marca</div>
+                  <div class="h-3.5 rounded-lg font-mono text-[10px] grid place-items-center text-white" style="background:#071d49">Azul marino</div>
+                  <div class="h-3.5 rounded-lg bg-slate-200 dark:bg-slate-700"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Editor de campos de color -->
+          <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+            <h4 class="font-bold text-sm">🖌️ Campos editables</h4>
+            <div class="mt-4 space-y-2.5 text-xs">
+              <div class="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5"><span class="size-4 rounded-full border border-slate-300" style="background:#22d3ee"></span><span class="flex-1 font-medium">Color de marca</span><span class="font-mono text-slate-400">#22d3ee</span></div>
+              <div class="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5"><span class="size-4 rounded-full border border-slate-300" style="background:#0e7490"></span><span class="flex-1 font-medium">Marca fuerte</span><span class="font-mono text-slate-400">#0e7490</span></div>
+              <div class="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5"><span class="size-4 rounded-full border border-slate-300" style="background:#071d49"></span><span class="flex-1 font-medium">Azul marino</span><span class="font-mono text-slate-400">#071d49</span></div>
+              <div class="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5"><span class="size-4 rounded-full border border-slate-300" style="background:#f8fafc"></span><span class="flex-1 font-medium">Fondo claro</span><span class="font-mono text-slate-400">#f8fafc</span></div>
+              <div class="flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5"><span class="size-4 rounded-full border border-slate-300" style="background:#020617"></span><span class="flex-1 font-medium">Fondo oscuro</span><span class="font-mono text-slate-400">#020617</span></div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3">
+              <span>✅</span><p class="text-xs text-slate-600 dark:text-slate-300"><strong>Vista previa en vivo:</strong> al cambiar un color, la tienda se actualiza al instante en el navegador para que veas el resultado antes de guardar.</p>
+            </div>
+            <div class="mt-3 flex items-center gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 p-3">
+              <span>🔄</span><p class="text-xs text-slate-600 dark:text-slate-300"><strong>Restaurar:</strong> vuelve al tema por defecto con un clic.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 20.2 PORTADA E INICIO ── -->
+      <section id="admin-config-portada" class="section-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-8">
+        <p class="font-mono text-xs uppercase tracking-[.25em] text-cyan-600 dark:text-cyan-400">Sección 20.2</p>
+        <h3 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight">Portada, Studio y secciones del inicio</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Con el <strong>editor visual de inicio</strong> armas la portada y las secciones de la home sin tocar código: elige layouts, fondos, textos e imágenes.</p>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+              <h4 class="font-bold text-sm">📋 Portada (hero)</h4>
+              <ul class="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                <li class="flex gap-2"><span>✔</span> <strong>Layout:</strong> texto izquierda/derecha, centrado, o solo texto.</li>
+                <li class="flex gap-2"><span>✔</span> <strong>Fondo:</strong> color sólido, imagen o degradado.</li>
+                <li class="flex gap-2"><span>✔</span> Textos, botones y estadísticas de la portada.</li>
+              </ul>
+              <!-- Mockup hero -->
+              <div class="mt-4 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div class="grid place-items-center bg-gradient-to-br from-[#071d49] to-[#123a6b] text-white p-5">
+                  <div class="text-center">
+                    <p class="font-mono text-[9px] uppercase tracking-[.25em] text-cyan-400">Iluminación y revestimientos</p>
+                    <p class="mt-1 text-sm font-black">Transforma tus espacios con luz</p>
+                    <p class="mt-1 text-[10px] text-slate-300">Descubre nuestra colección de productos LED.</p>
+                    <div class="mt-3 flex justify-center gap-2">
+                      <span class="rounded-full bg-cyan-400 px-3 py-1 text-[9px] font-bold text-blue-950">Ver catálogo</span>
+                      <span class="rounded-full border border-white/30 px-3 py-1 text-[9px]">Contáctanos</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+              <h4 class="font-bold text-sm">🎨 Studio</h4>
+              <ul class="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                <li class="flex gap-2"><span>✔</span> <strong>Orientación:</strong> texto a la izquierda o derecha.</li>
+                <li class="flex gap-2"><span>✔</span> <strong>Fondo:</strong> color, imagen o degradado.</li>
+                <li class="flex gap-2"><span>✔</span> Colores de texto y título.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5">
+            <h4 class="font-bold text-sm">🧩 Secciones del inicio (editor visual)</h4>
+            <p class="mt-1 text-xs text-slate-500">Agrega, reordena y elimina bloques desde el panel.</p>
+            <div class="mt-4 space-y-2.5">
+              <div class="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5 text-xs"><span class="flex items-center gap-3"><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">◀</span><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">▶</span></span><span class="flex-1 font-medium">📄 Texto</span><span class="badge bg-slate-100 dark:bg-slate-700 text-slate-500">Arrastrable</span></div>
+              <div class="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5 text-xs"><span class="flex items-center gap-3"><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">◀</span><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">▶</span></span><span class="flex-1 font-medium">🖼️ Imagen + texto</span><span class="badge bg-slate-100 dark:bg-slate-700 text-slate-500">Arrastrable</span></div>
+              <div class="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5 text-xs"><span class="flex items-center gap-3"><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">◀</span><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">▶</span></span><span class="flex-1 font-medium">📊 Estadísticas</span><span class="badge bg-slate-100 dark:bg-slate-700 text-slate-500">Arrastrable</span></div>
+              <div class="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5 text-xs"><span class="flex items-center gap-3"><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">◀</span><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">▶</span></span><span class="flex-1 font-medium">🚀 Llamada a la acción (CTA)</span><span class="badge bg-slate-100 dark:bg-slate-700 text-slate-500">Arrastrable</span></div>
+              <div class="flex items-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5 text-xs"><span class="flex items-center gap-3"><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">◀</span><span class="grid size-4 place-items-center rounded-full bg-cyan-500/15 text-cyan-700">▶</span></span><span class="flex-1 font-medium">💬 Frase / Cita</span><span class="badge bg-slate-100 dark:bg-slate-700 text-slate-500">Arrastrable</span></div>
+            </div>
+            <div class="mt-4 rounded-xl bg-cyan-500/10 border border-cyan-500/25 p-3">
+              <p class="text-xs text-slate-600 dark:text-slate-300">👁️ <strong>Vista previa en vivo:</strong> el editor muestra la portada real junto al formulario para que veas cada cambio al instante.</p>
+            </div>
+            <button class="mt-3 w-full rounded-full bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 py-2.5 text-xs font-semibold text-slate-500">＋ Agregar sección</button>
+          </div>
         </div>
       </section>
 
@@ -1159,6 +1388,22 @@ tailwind.config = {
           <details class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5 group">
             <summary class="cursor-pointer font-semibold text-sm list-none flex items-center justify-between">¿Dónde veo las tasas de cambio?<span class="text-cyan-500 group-open:rotate-45 transition-transform">＋</span></summary>
             <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">En el Resumen del panel admin (tasa oficial + paralela y su diferencia) y en el dashboard del cliente (solo tasa oficial), ambas desde dolarapi.com.</p>
+          </details>
+          <details class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5 group">
+            <summary class="cursor-pointer font-semibold text-sm list-none flex items-center justify-between">¿Cómo vendo un producto por peso (gramos/kilos)?<span class="text-cyan-500 group-open:rotate-45 transition-transform">＋</span></summary>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">En <em>Panel → Productos → Nuevo/Editar producto</em> elige <strong>“⚖️ Por peso”</strong> como tipo de precio. Completa el <code>precio por kilo USD</code>, el <code>mínimo de compra (gramos)</code>, la <code>unidad de venta</code> (g, kg) y el <code>stock en gramos</code>. El cliente verá un selector g/kg en el detalle del producto.</p>
+          </details>
+          <details class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5 group">
+            <summary class="cursor-pointer font-semibold text-sm list-none flex items-center justify-between">¿Cómo cambio los colores y el tema de la tienda?<span class="text-cyan-500 group-open:rotate-45 transition-transform">＋</span></summary>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">En <em>Panel → Configuración → Apariencia</em> encuentras los <strong>temas rápidos (presets)</strong> con un clic, o puedes personalizar cada color manualmente (marca, azul marino, fondos claro/oscuro). Tienes <strong>vista previa en vivo</strong> antes de guardar.</p>
+          </details>
+          <details class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5 group">
+            <summary class="cursor-pointer font-semibold text-sm list-none flex items-center justify-between">¿Cómo edito la portada y las secciones del inicio?<span class="text-cyan-500 group-open:rotate-45 transition-transform">＋</span></summary>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">En <em>Panel → Configuración → Portada / Studio / Inicio</em> usas el <strong>editor visual</strong>: elige layout (texto izquierda/derecha/centrado), fondo (color/imagen/degradado) y agrega o reordena secciones (texto, imagen+texto, estadísticas, CTA, citas) como bloques arrastrables.</p>
+          </details>
+          <details class="rounded-2xl border border-slate-200/70 dark:border-slate-700 p-5 group">
+            <summary class="cursor-pointer font-semibold text-sm list-none flex items-center justify-between">¿Qué diferencia hay entre “por unidad” y “por peso” en los KPIs?<span class="text-cyan-500 group-open:rotate-45 transition-transform">＋</span></summary>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">El Resumen del panel cuenta <strong>unidades vendidas</strong> solo de solicitudes completadas. Si vendes productos por peso, la métrica se expresa en el total vendido para ese producto. Ambos se consolidan correctamente al sumar las ventas.</p>
           </details>
         </div>
       </section>
