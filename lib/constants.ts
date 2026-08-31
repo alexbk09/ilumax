@@ -68,6 +68,9 @@ export const CUENTAS_COBRAR_MODULE_SLUG = 'cuentas_cobrar'
 /** Slug del módulo "Conciliación Bancaria" para permisos. */
 export const CONCILIACION_MODULE_SLUG = 'conciliacion'
 
+/** Slug del módulo "Cuentas Bancarias" para permisos. */
+export const CUENTAS_BANCARIAS_MODULE_SLUG = 'cuentas_bancarias'
+
 /** Slug del módulo "Pasarelas de Pago" para permisos. */
 export const PASARELAS_MODULE_SLUG = 'pasarelas'
 
