@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { BarChart3, Building2, ClipboardList, FileText, FolderTree, LogOut, Menu, Package, Percent, Receipt, Settings2, ShieldCheck, Tag, UserRound, Users, X } from 'lucide-react'
+import { BarChart3, BookOpen, Building2, ClipboardList, CreditCard, FileText, FolderTree, Landmark, LogOut, MapPin, Menu, Package, Percent, Receipt, Settings2, ShieldCheck, Tag, Truck, UserRound, Users, Wallet, Warehouse, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SiteFooter } from '@/components/site-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -47,6 +47,31 @@ const navGroups: NavGroup[] = [
       { href: '/admin/cotizaciones', label: 'Cotizaciones', icon: FileText },
       { href: '/admin/facturacion', label: 'Facturación', icon: Receipt },
       { href: '/admin/solicitudes', label: 'Solicitudes', icon: ClipboardList },
+    ],
+  },
+  {
+    title: 'Logística',
+    items: [
+      { href: '/admin/almacenes', label: 'Almacenes', icon: Warehouse },
+      { href: '/admin/transportistas', label: 'Transportistas', icon: Truck },
+      { href: '/admin/despachos', label: 'Despacho y Rutas', icon: MapPin },
+      { href: '/admin/envios', label: 'Zonas de Envío', icon: MapPin },
+    ],
+  },
+  {
+    title: 'Finanzas',
+    items: [
+      { href: '/admin/cuentas-cobrar', label: 'Cuentas por Cobrar', icon: Wallet },
+      { href: '/admin/conciliacion', label: 'Conciliación bancaria', icon: Landmark },
+      { href: '/admin/pasarelas', label: 'Pasarelas de Pago', icon: CreditCard },
+    ],
+  },
+  {
+    title: 'Contabilidad',
+    items: [
+      { href: '/admin/libros-fiscales', label: 'Libros Fiscales', icon: BookOpen },
+      { href: '/admin/facturacion-xml', label: 'Facturación XML', icon: Receipt },
+      { href: '/admin/reporte-margen', label: 'Reporte de Margen', icon: Percent },
     ],
   },
   {
