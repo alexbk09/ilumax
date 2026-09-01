@@ -1,12 +1,13 @@
 import { requireAdmin } from '@/lib/auth'
 import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
 import { getAdminDashboardData } from '@/services/requests'
+import { getAdminDashboardExtendedData } from '@/services/dashboard'
 import { getExchangeRates } from '@/services/exchange-rate'
 import { LOW_STOCK_ALERT } from '@/lib/constants'
-import { formatBolivars, moneyUsd, formatRate } from '@/lib/currency'
+import { moneyUsd, formatRate } from '@/lib/currency'
 import { rateSpread } from '@/lib/rate-spread-calculator'
 import { STATUS_COLORS, SalesBarChart, StatusDonutChart } from '@/components/admin-dashboard-charts'
-import { AlertTriangle, ArrowLeftRight, BadgeDollarSign, ClipboardList, Clock, Package, ShoppingBag, Users, Wallet, CheckCircle2 } from 'lucide-react'
+import { AlertTriangle, ArrowLeftRight, BadgeDollarSign, Boxes, CheckCircle2, ClipboardList, Clock, FileText, Landmark, ShoppingBag, TicketCheck, Truck, Users, Wallet, Warehouse } from 'lucide-react'
 
 /** Últimos 7 días con etiqueta corta y clave ISO. */
 function last7Days() {
@@ -20,12 +21,14 @@ function last7Days() {
 /** Dashboard admin con KPIs, tasas y gráficos. */
 export default async function AdminPage() {
   await requireAdmin()
-  const [[{ data: products }, { data: requests }, { data: profiles }], { official, parallel }] = await Promise.all([
+  const [[{ data: products }, { data: requests }, { data: profiles }], { official, parallel }, extended] = await Promise.all([
     getAdminDashboardData(),
     getExchangeRates(),
+    getAdminDashboardExtendedData(),
   ])
 
   const { spread } = rateSpread(official.rate, parallel.rate)
+  const extendedData = extended.data
   const reqs = requests ?? []
   // Solo las solicitudes completadas generan ingresos, ventas y unidades vendidas.
   const completedReqs = reqs.filter((r) => r.status === 'completed')
@@ -48,12 +51,27 @@ export default async function AdminPage() {
     return acc
   }, {})).sort((a, b) => b.qty - a.qty).slice(0, 5)
 
+  // Ticket promedio por pedido completado.
+  const averageTicket = completedReqs.length > 0 ? revenue / completedReqs.length : 0
+
   const stats = [
     [Wallet, 'Ingresos', moneyUsd(revenue), 'Solo pedidos completados'],
     [CheckCircle2, 'Completadas', moneyUsd(completedRevenue), 'Pedidos finalizados'],
     [ShoppingBag, 'Unidades vendidas', String(unitSales), 'Solo pedidos completados'],
+    [TicketCheck, 'Ticket promedio', moneyUsd(averageTicket), 'Por pedido completado'],
     [ClipboardList, 'Solicitudes', String(reqs.length), 'Pedidos registrados'],
-    [Clock, 'Pendientes', String(pendingCount), 'Requieren atención'],
+  ] as const
+
+  // KPIs financieros y logísticos extendidos.
+  const extendedStats = [
+    [FileText, 'Facturas emitidas', String(extendedData?.facturasEmitidas ?? 0), `${extendedData?.facturasAnuladas ?? 0} anuladas`],
+    [Landmark, 'Total facturado', moneyUsd(extendedData?.totalFacturadoUsd ?? 0), `IVA: ${moneyUsd(extendedData?.ivaGeneradoUsd ?? 0)}`],
+    [Users, 'Clientes', String(profiles?.length ?? 0), 'Perfiles registrados'],
+    [Warehouse, 'Valor inventario', moneyUsd(extendedData?.valorInventarioUsd ?? 0), `${extendedData?.productosAgotados ?? 0} agotados`],
+    [Boxes, 'Productos', String(extendedData?.productosTotales ?? 0), `${extendedData?.productosActivos ?? 0} en catálogo`],
+    [Truck, 'Despachos activos', String(extendedData?.despachosActivos ?? 0), 'Programados o en ruta'],
+    [Wallet, 'CxC pendiente', moneyUsd(extendedData?.cuentasPorCobrarSaldo ?? 0), `${extendedData?.cuentasVencidas ?? 0} vencidas`],
+    [Clock, 'Cotizaciones activas', String(extendedData?.cotizacionesActivas ?? 0), `${extendedData?.cotizacionesConvertidas ?? 0} convertidas`],
   ] as const
 
   return (
@@ -66,6 +84,21 @@ export default async function AdminPage() {
           {stats.map(([Icon, label, value, sub]) => (
             <div key={label} className="rounded-3xl border border-border bg-card p-5"><Icon size={20} className="text-cyan-600" /><p className="mt-7 text-sm text-muted-foreground">{label}</p><p className="mt-1 text-3xl font-semibold tracking-tight">{value}</p><p className="mt-1 text-xs text-muted-foreground">{sub}</p></div>
           ))}
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-medium">Inteligencia de negocio</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Finanzas, logística, inventario y ventas en un vistazo.</p>
+            </div>
+            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">Pendientes: {pendingCount}</span>
+          </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {extendedStats.map(([Icon, label, value, sub]) => (
+              <div key={label} className="rounded-2xl bg-muted/60 p-4 transition hover:bg-muted"><div className="flex items-center gap-2"><Icon size={18} className="text-cyan-600" /><p className="text-xs text-muted-foreground">{label}</p></div><p className="mt-3 text-2xl font-semibold tracking-tight">{value}</p><p className="mt-1 text-xs text-muted-foreground">{sub}</p></div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_.8fr]">
