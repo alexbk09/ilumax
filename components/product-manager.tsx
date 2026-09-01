@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import * as XLSX from 'xlsx'
 import { Building2, Download, FileSpreadsheet, ImagePlus, Package, Pencil, Plus, Tag, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
@@ -135,6 +136,52 @@ const UNIT_OPTIONS = [
   { value: 'pkg', label: 'pkg (paquete)' },
   { value: 'box', label: 'box (caja)' },
 ]
+
+/**
+ * Botón de selección de imagen con input oculto por completo.
+ * Usa un input con display:none + click programático (ref.click()) en
+ * lugar de un <label> envolviendo un input sr-only. Así el navegador
+ * NUNCA devuelve el foco visual al input al cerrar el selector de
+ * archivos nativo, evitando el anillo de foco azul/ring que quedaba
+ * pegado en el modal al elegir una fotografía para un color.
+ */
+function ImagePickerButton({
+  onPick,
+  children,
+  disabled,
+  className,
+}: {
+  onPick: (file: File) => void
+  children: ReactNode
+  disabled?: boolean
+  className?: string
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  return (
+    <>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => inputRef.current?.click()}
+        className={className}
+      >
+        {children}
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          // Limpia el valor para permitir re-seleccionar el mismo archivo.
+          const file = e.target.files?.[0]
+          e.target.value = ''
+          if (file) onPick(file)
+        }}
+      />
+    </>
+  )
+}
 
 export function ProductManager({
   initialProducts,
@@ -1016,25 +1063,18 @@ export function ProductManager({
                       />
 
                       {/* Imagen del color */}
-                      <label className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium transition-colors hover:bg-muted focus-within:outline-none">
+                      <ImagePickerButton
+                        onPick={(file) => uploadColorImage(i, file)}
+                        disabled={uploadingColorIndex === i}
+                        className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                      >
                         {uploadingColorIndex === i ? (
                           <span className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />
                         ) : (
                           <Upload size={13} />
                         )}
                         {uploadingColorIndex === i ? 'Cargando…' : color.image ? 'Cambiar' : 'Imagen'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="sr-only"
-                          onChange={(e) => {
-                            // Limpia el valor para permitir re-seleccionar el mismo archivo.
-                            const file = e.target.files?.[0]
-                            e.target.value = ''
-                            if (file) uploadColorImage(i, file)
-                          }}
-                        />
-                      </label>
+                      </ImagePickerButton>
 
                       {/* Quitar color */}
                       <button
@@ -1138,21 +1178,14 @@ export function ProductManager({
                   ))}
                 </div>
               )}
-              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-secondary focus-within:outline-none">
+              <ImagePickerButton
+                onPick={upload}
+                disabled={uploading}
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              >
                 <Upload size={16} />
                 {uploading ? 'Cargando…' : 'Cargar imagen'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="sr-only"
-                  onChange={(e) => {
-                    // Limpia el valor para permitir re-seleccionar el mismo archivo.
-                    const file = e.target.files?.[0]
-                    e.target.value = ''
-                    if (file) upload(file)
-                  }}
-                />
-              </label>
+              </ImagePickerButton>
             </div>
           </div>
         )}
