@@ -156,6 +156,8 @@ export function ProductManager({
   const [bulkOpen, setBulkOpen] = useState(false)
   const [editing, setEditing] = useState<EditorState | null>(null)
   const [uploading, setUploading] = useState(false)
+  /** Índice del color cuya imagen se está subiendo (null = ninguno). */
+  const [uploadingColorIndex, setUploadingColorIndex] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -430,12 +432,13 @@ export function ProductManager({
 
   /** Sube una imagen para un color específico y la asigna a la variante. */
   async function uploadColorImage(index: number, file: File) {
-    setUploading(true)
+    // Estado de carga LOCAL al color: no debe alterar el resto del modal.
+    setUploadingColorIndex(index)
     const form = new FormData()
     form.append('file', file)
     const response = await fetch('/api/admin/upload', { method: 'POST', body: form })
     const result = await response.json()
-    setUploading(false)
+    setUploadingColorIndex(null)
     if (!response.ok) {
       toast.error('No se pudo cargar la imagen', { description: result.error ?? 'Verifica el bucket y vuelve a intentarlo.' })
       return
@@ -1013,14 +1016,23 @@ export function ProductManager({
                       />
 
                       {/* Imagen del color */}
-                      <label className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium transition-colors hover:bg-muted">
-                        <Upload size={13} />
-                        {color.image ? 'Cambiar' : 'Imagen'}
+                      <label className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium transition-colors hover:bg-muted focus-within:outline-none">
+                        {uploadingColorIndex === i ? (
+                          <span className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />
+                        ) : (
+                          <Upload size={13} />
+                        )}
+                        {uploadingColorIndex === i ? 'Cargando…' : color.image ? 'Cambiar' : 'Imagen'}
                         <input
                           type="file"
                           accept="image/*"
                           className="sr-only"
-                          onChange={(e) => e.target.files?.[0] && uploadColorImage(i, e.target.files[0])}
+                          onChange={(e) => {
+                            // Limpia el valor para permitir re-seleccionar el mismo archivo.
+                            const file = e.target.files?.[0]
+                            e.target.value = ''
+                            if (file) uploadColorImage(i, file)
+                          }}
                         />
                       </label>
 
@@ -1126,14 +1138,19 @@ export function ProductManager({
                   ))}
                 </div>
               )}
-              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-secondary">
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-secondary focus-within:outline-none">
                 <Upload size={16} />
                 {uploading ? 'Cargando…' : 'Cargar imagen'}
                 <input
                   type="file"
                   accept="image/*"
                   className="sr-only"
-                  onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
+                  onChange={(e) => {
+                    // Limpia el valor para permitir re-seleccionar el mismo archivo.
+                    const file = e.target.files?.[0]
+                    e.target.value = ''
+                    if (file) upload(file)
+                  }}
                 />
               </label>
             </div>
