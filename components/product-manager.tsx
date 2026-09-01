@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import * as XLSX from 'xlsx'
 import { Building2, Download, FileSpreadsheet, ImagePlus, Package, Pencil, Plus, Tag, Trash2, Upload, X } from 'lucide-react'
@@ -12,6 +12,7 @@ import { SearchableMultiSelect, SearchableSelect } from '@/components/ui/select-
 import { BulkUploadModal } from '@/components/bulk-upload-modal'
 import { confirmDelete } from '@/components/confirm-dialog'
 import { lossPerProductUnit } from '@/lib/rate-spread-calculator'
+import { resetBodyScroll } from '@/lib/scroll-lock'
 
 type ProductImage = { id: string; url: string; alt_text: string | null; sort_order: number; color_name?: string | null }
 type Category = { id: string; name: string; slug: string }
@@ -498,6 +499,17 @@ export function ProductManager({
     })
     toast.success('Imagen del color cargada', { description: 'La imagen se mostrará al seleccionar este color.' })
   }
+
+  /**
+   * Limpieza de scroll: cuando el modal de producto se cierra (guardado,
+   * cancelado o backdrop), restaura el overflow del body por si el
+   * contador del scroll-lock quedó desincronizado (p. ej. un modal
+   * anidado que cierra antes que el padre). Sin esto, el body puede
+   * quedar con overflow:hidden y bloquear el scroll / clicks del panel.
+   */
+  useEffect(() => {
+    if (!modalOpen) resetBodyScroll()
+  }, [modalOpen])
 
   /**
    * Opciones de marca para el formulario.

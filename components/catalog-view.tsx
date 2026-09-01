@@ -367,7 +367,7 @@ export function CatalogView({
           product={selected as CardProduct}
           rate={exchangeRate}
           onClose={() => setSelected(null)}
-          onAdd={(product, unit, quantity) => add(product, unit, quantity)}
+          onAdd={(product, unit, quantity, colorName) => add(product, unit, quantity, colorName)}
         />
       )}
 

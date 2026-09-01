@@ -57,10 +57,20 @@ export function CartDrawer({ open, onClose, cart, onChange, total, onSubmit, sub
           {cart.length === 0 ? (
             <p className="py-12 text-center text-sm text-muted-foreground">Aún no has agregado piezas.</p>
           ) : cart.map((item) => (
-            <div key={item.id} className="flex gap-3 border-b border-border pb-4">
-              <img src={item.image_url} alt="" className="size-16 rounded-xl object-cover" />
+            <div key={item.cartItemId} className="flex gap-3 border-b border-border pb-4">
+              {(() => {
+                // Muestra la imagen del color seleccionado si existe, si no la general.
+                const colorImage = item.color_name
+                  ? (item.images ?? []).find((img) => img.color_name === item.color_name)?.url
+                  : undefined
+                const displayImage = colorImage ?? item.image_url
+                return <img key={displayImage} src={displayImage} alt="" className="size-16 rounded-xl object-cover" />
+              })()}
               <div className="flex-1">
                 <p className="text-sm font-medium">{item.name}</p>
+                {item.color_name && (
+                  <p className="text-xs font-medium text-brand-strong">🎨 {item.color_name}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {item.pricing_type === 'weight'
                     ? `${moneyUsd(Number(item.price_per_gram_usd) || 0)} /g`
@@ -68,9 +78,9 @@ export function CartDrawer({ open, onClose, cart, onChange, total, onSubmit, sub
                   {' · '}{moneyUsd(lineAmount(item))}
                 </p>
                 <div className="mt-2 flex items-center gap-2">
-                  <button onClick={() => onChange(item.id, -1)} className="grid size-6 place-items-center rounded-full border border-border"><Minus size={12} /></button>
+                  <button onClick={() => onChange(item.cartItemId, -1)} className="grid size-6 place-items-center rounded-full border border-border"><Minus size={12} /></button>
                   <span className="w-16 text-center text-xs">{qtyLabel(item)}</span>
-                  <button onClick={() => onChange(item.id, 1)} className="grid size-6 place-items-center rounded-full border border-border"><Plus size={12} /></button>
+                  <button onClick={() => onChange(item.cartItemId, 1)} className="grid size-6 place-items-center rounded-full border border-border"><Plus size={12} /></button>
                 </div>
               </div>
             </div>

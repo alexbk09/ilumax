@@ -20,6 +20,8 @@ export type RequestItem = {
   unit_label?: string | null
   /** Peso total en gramos (solo si el producto es por peso). */
   weight_grams?: number | null
+  /** Color exacto elegido por el cliente en el catálogo (snapshot). */
+  color_name?: string | null
 }
 
 export type RequestStatusHistory = {
@@ -71,6 +73,8 @@ export type NewRequestItem = {
   quantity: number
   /** Unidad del ítem: 'g', 'kg' o 'u'. Default: 'u'. */
   unit?: string
+  /** Color exacto elegido por el cliente en el catálogo (opcional). */
+  color_name?: string | null
 }
 
 // ---------- Solicitudes del cliente ----------

@@ -25,6 +25,8 @@ export type CartItemInput = {
   quantity: number
   /** Unidad del ítem: 'g', 'kg' o 'u'. Default: 'g' para peso, 'u' para unidad. */
   unit?: string
+  /** Color exacto elegido en el catálogo (snapshot, opcional). */
+  color_name?: string | null
 }
 
 export type NormalizedItem = {
@@ -36,6 +38,8 @@ export type NormalizedItem = {
   unit_label: string
   /** Peso total en gramos (solo si es por peso). */
   weight_grams: number | null
+  /** Color exacto elegido en el catálogo (snapshot, opcional). */
+  color_name?: string | null
 }
 
 /**

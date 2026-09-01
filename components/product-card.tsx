@@ -119,7 +119,13 @@ export function ProductCard({ product, rate, onAdd, onViewDetails }: {
             <p className="text-xs text-brand-strong">{categoryFor(product)}</p>
             <h3 className="mt-1 font-medium">{product.name}</h3>
           </div>
-          <button onClick={() => onAdd(product)} aria-label={`Agregar ${product.name}`} className="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground transition hover:bg-navy hover:text-navy-foreground"><Plus size={17} /></button>
+          <button
+            onClick={() => (product.colors && product.colors.length > 0 ? onViewDetails(product) : onAdd(product))}
+            aria-label={`Agregar ${product.name}`}
+            className="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground transition hover:bg-navy hover:text-navy-foreground"
+          >
+            <Plus size={17} />
+          </button>
         </div>
         {product.description && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{product.description}</p>}
 

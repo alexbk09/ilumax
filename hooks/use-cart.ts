@@ -35,16 +35,20 @@ export type CartProduct = {
   /** Descuento por mayoreo (%) mostrado como incentivo. */
   bulk_discount_percent?: number
   categories?: { id: string; name: string; slug: string; description: string | null }[]
-  images?: { id: string; url: string; alt_text: string | null; sort_order: number }[]
+  images?: { id: string; url: string; alt_text: string | null; sort_order: number; color_name?: string | null }[]
 }
 
 /** Ítem del carrito: producto + cantidad + unidad seleccionada. */
 export type CartItem = CartProduct & {
+  /** ID único del ítem en el carrito: producto + color (si tiene). */
+  cartItemId: string
   quantity: number
   /** Unidad de la cantidad: 'g', 'kg' o 'u'. Default: 'u'. */
   unit?: string
   /** Gramos totales (solo si el producto es por peso). */
   weight_grams?: number | null
+  /** Color exacto elegido por el cliente en el catálogo (snapshot). */
+  color_name?: string | null
 }
 
 const CART_STORAGE_KEY = 'ilumax-cart'
@@ -71,7 +75,15 @@ export function useCart(exchangeRate: number) {
       const stored = localStorage.getItem(CART_STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored) as CartItem[]
-        if (Array.isArray(parsed)) setCart(parsed)
+        if (Array.isArray(parsed)) {
+          // Backfill: los ítems guardados antes de esta versión no tienen
+          // cartItemId. Se regenera la clave compuesta producto + color.
+          const normalized = parsed.map((item) => ({
+            ...item,
+            cartItemId: item.cartItemId ?? `${item.id}::${item.color_name ?? ''}`,
+          }))
+          setCart(normalized)
+        }
       }
     } catch {
       // Si el dato guardado está corrupto, simplemente se ignora.
@@ -102,10 +114,18 @@ export function useCart(exchangeRate: number) {
    * Agrega un producto al carrito respetando el stock disponible.
    * Para 'unit', quantity = cantidad de unidades.
    * Para 'weight', unit = 'g'|'kg' y quantity = peso en esa unidad.
+   * @param colorName Color exacto elegido en el catálogo (opcional).
+   * Si se vuelve a agregar el mismo producto con OTRO color, se crea
+   * una línea separada para no mezclar variantes.
    */
-  const add = useCallback((product: CartProduct, unit = 'u', quantity?: number) => {
+  const add = useCallback((product: CartProduct, unit = 'u', quantity?: number, colorName?: string) => {
+    const colorKey = colorName ?? null
+    // Clave única de línea: producto + color. Permite el mismo producto
+    // en colores distintos como líneas separadas en el carrito.
+    const cartItemId = `${product.id}::${colorKey ?? ''}`
     setCart((current) => {
-      const found = current.find((item) => item.id === product.id)
+      // Busca el ítem existente con la misma clave de línea.
+      const found = current.find((item) => item.cartItemId === cartItemId)
 
       // Producto por peso: la cantidad se maneja en gramos
       if (product.pricing_type === 'weight') {
@@ -119,25 +139,26 @@ export function useCart(exchangeRate: number) {
         const addGrams = quantity == null && found?.weight_grams ? Math.max(minGrams, 100) : 0
         const newGrams = Math.min(Math.max(explicitGrams + addGrams, minGrams), maxGrams)
         return found
-          ? current.map((item) => (item.id === product.id ? { ...item, weight_grams: newGrams, quantity: newGrams, unit: 'g' } : item))
-          : [...current, { ...product, quantity: newGrams, weight_grams: newGrams, unit: 'g' }]
+          ? current.map((item) => (item.cartItemId === cartItemId ? { ...item, weight_grams: newGrams, quantity: newGrams, unit: 'g', color_name: colorKey } : item))
+          : [...current, { ...product, cartItemId, quantity: newGrams, weight_grams: newGrams, unit: 'g', color_name: colorKey }]
       }
 
       // Producto por unidad
       const addQty = quantity ?? 1
       return found
-        ? current.map((item) => (item.id === product.id ? { ...item, quantity: Math.min(item.quantity + addQty, product.stock) } : item))
-        : [...current, { ...product, quantity: Math.min(Math.max(1, Math.floor(addQty)), product.stock), unit: 'u' }]
+        ? current.map((item) => (item.cartItemId === cartItemId ? { ...item, quantity: Math.min(item.quantity + addQty, product.stock), color_name: colorKey } : item))
+        : [...current, { ...product, cartItemId, quantity: Math.min(Math.max(1, Math.floor(addQty)), product.stock), unit: 'u', color_name: colorKey }]
     })
     setCartOpen(true)
-    toast.success(`${product.name} agregado a tu solicitud`)
+    toast.success(`${product.name}${colorName ? ` (${colorName})` : ''} agregado a tu solicitud`)
   }, [])
 
   /** Cambia la cantidad de un ítem; si llega a 0 se elimina del carrito. */
-  const change = useCallback((id: string, amount: number) => {
+  const change = useCallback((cartItemId: string, amount: number) => {
     setCart((current) =>
       current
         .map((item) => {
+          if (item.cartItemId !== cartItemId) return item
           const isWeight = item.pricing_type === 'weight'
           if (isWeight) {
             // Para productos por peso, el incremento es de 100g (o el mínimo)
@@ -155,10 +176,10 @@ export function useCart(exchangeRate: number) {
   }, [])
 
   /** Actualiza la cantidad de un ítem a un valor explícito (usado en el modal). */
-  const setQuantity = useCallback((id: string, quantity: number, unit = 'u') => {
+  const setQuantity = useCallback((cartItemId: string, quantity: number, unit = 'u') => {
     setCart((current) =>
       current.map((item) => {
-        if (item.id !== id) return item
+        if (item.cartItemId !== cartItemId) return item
         const isWeight = item.pricing_type === 'weight'
         if (isWeight) {
           const grams = toGrams(quantity, unit)
@@ -187,7 +208,7 @@ export function useCart(exchangeRate: number) {
     const response = await fetch('/api/solicitudes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart.map((item) => ({ product_id: item.id, quantity: item.quantity, unit: item.unit || 'u' })) }),
+      body: JSON.stringify({ items: cart.map((item) => ({ product_id: item.id, quantity: item.quantity, unit: item.unit || 'u', color_name: item.color_name ?? null })) }),
     })
     const result = await response.json().catch(() => ({}))
     setSubmitting(false)

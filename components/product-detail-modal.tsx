@@ -22,7 +22,7 @@ export function ProductDetailModal({ product, rate, onClose, onAdd }: {
   product: CardProduct
   rate: number
   onClose: () => void
-  onAdd: (product: CardProduct, unit?: string, quantity?: number) => void
+  onAdd: (product: CardProduct, unit?: string, quantity?: number, colorName?: string) => void
 }) {
   // Imágenes generales (sin color) y mapa de imagen por color
   const generalImages = (product.images ?? []).filter((img) => !img.color_name)
@@ -75,12 +75,13 @@ export function ProductDetailModal({ product, rate, onClose, onAdd }: {
     setWeightValue(unit === 'kg' ? next / 1000 : next)
   }
 
-  /** Llama a onAdd con la unidad y cantidad correctas. */
+  /** Llama a onAdd con la unidad, cantidad y color seleccionado. */
   function handleAdd() {
+    const colorName = selectedColor ?? undefined
     if (isWeight) {
-      onAdd(product, unit, weightValue) // el carrito normaliza a gramos
+      onAdd(product, unit, weightValue, colorName) // el carrito normaliza a gramos
     } else {
-      onAdd(product, 'u', unitQty)
+      onAdd(product, 'u', unitQty, colorName)
     }
     onClose()
   }
