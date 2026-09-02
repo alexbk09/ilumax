@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { getFacturasParaXML } from '@/services/facturacion-xml'
 import { FacturacionXmlManager } from '@/components/facturacion-xml-manager'
@@ -16,21 +16,21 @@ export default async function FacturacionXmlPage() {
   const canRead = await hasPermission(FACTURACION_XML_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader eyebrow="Contabilidad" title="Facturación XML SENIAT" description="Facturas electrónicas en formato XML." />
         <div className="p-5 sm:p-8">
           <div className="rounded-3xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   const { data: facturas } = await getFacturasParaXML()
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Contabilidad"
         title="Facturación XML SENIAT"
@@ -39,6 +39,6 @@ export default async function FacturacionXmlPage() {
       <div className="p-5 sm:p-8">
         <FacturacionXmlManager initialFacturas={facturas ?? []} />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

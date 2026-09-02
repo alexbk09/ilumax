@@ -6,6 +6,7 @@ import {
 } from '@/lib/invoice-calculator'
 import nodemailer from 'nodemailer'
 import { moneyUsd } from '@/lib/currency'
+import { createNotification } from '@/services/notifications'
 
 /**
  * Servicio de facturación venezolana (SENIAT).
@@ -476,6 +477,19 @@ export async function issueInvoice(solicitudId: string, customer: InvoiceCustome
     .single()
 
   if (error) return { data: null, error: { message: `No se pudo emitir la factura: ${error.message}` } }
+
+  // Notifica al cliente dueño de la solicitud: su factura quedó emitida.
+  if (request.user_id) {
+    try {
+      await createNotification({
+        userId: request.user_id,
+        type: 'factura',
+        title: `Factura ${invoiceNumber} emitida`,
+        body: `Tu factura por ${moneyUsd(Number(totals.total))} fue generada correctamente.`,
+        href: '/dashboard',
+      })
+    } catch { /* Las notificaciones nunca bloquean la facturación. */ }
+  }
 
   return { data: mapInvoice(data), error: null }
 }

@@ -8,6 +8,7 @@ import type { LucideIcon } from 'lucide-react'
 import { SiteFooter } from '@/components/site-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { UserMenu } from '@/components/user-menu'
+import { NotificationsBell } from '@/components/notifications-bell'
 import { resetBodyScroll } from '@/lib/scroll-lock'
 import { getInitials } from '@/lib/utils'
 
@@ -246,6 +247,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <NotificationsBell instanceId="notifications-desktop" />
           <ThemeToggle />
           <UserMenu />
         </div>
@@ -291,6 +293,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
       <div className="flex items-center gap-2">
         <p className="hidden font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:block">Panel de control</p>
+        <NotificationsBell instanceId="notifications-mobile" />
         <ThemeToggle />
         <UserMenu />
       </div>

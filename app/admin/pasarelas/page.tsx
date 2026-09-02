@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { getPagos, getPasarelas } from '@/services/pasarelas'
 import { PasarelasManager } from '@/components/pasarelas-manager'
@@ -16,15 +16,15 @@ export default async function PasarelasPage() {
   const canRead = await hasPermission(PASARELAS_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader eyebrow="Finanzas" title="Pasarelas de Pago" description="Pagos directos con tarjetas, PayPal y billeteras." />
         <div className="p-5 sm:p-8">
           <div className="rounded-3xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   const [{ data: pasarelas }, { data: pagos }] = await Promise.all([
@@ -33,7 +33,7 @@ export default async function PasarelasPage() {
   ])
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Finanzas"
         title="Pasarelas de Pago"
@@ -42,6 +42,6 @@ export default async function PasarelasPage() {
       <div className="p-5 sm:p-8">
         <PasarelasManager initialPasarelas={pasarelas ?? []} initialPagos={pagos ?? []} />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

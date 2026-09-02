@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { SiteSettingsManager } from '@/components/site-settings-manager'
 import { QuoteSettingsManager } from '@/components/quote-settings-manager'
 import { getAdminSiteSettings } from '@/services/site-settings'
@@ -20,7 +20,7 @@ export default async function SettingsPage() {
   ])
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Sitio"
         title="Configuración"
@@ -38,6 +38,6 @@ export default async function SettingsPage() {
           </div>
         </section>
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

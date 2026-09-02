@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { getAdminDashboardData } from '@/services/requests'
 import { getAdminDashboardExtendedData } from '@/services/dashboard'
 import { getExchangeRates } from '@/services/exchange-rate'
@@ -75,7 +75,7 @@ export default async function AdminPage() {
   ] as const
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader eyebrow="Control center" title="Visión general" description="Métricas, tasas y estado del negocio en tiempo real." />
       <div className="p-5 sm:p-8">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -131,6 +131,6 @@ export default async function AdminPage() {
           </section>
         </div>
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

@@ -2,6 +2,8 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ToastProvider } from '@/components/toast-provider'
+import { AppProviders } from '@/components/app-providers'
+import { NavigationProgress } from '@/components/navigation-progress'
 import { WhatsAppButton } from '@/components/whatsapp-button'
 import { ScrollReset } from '@/components/scroll-reset'
 import { getSiteSettings } from '@/services/site-settings'
@@ -54,7 +56,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <style dangerouslySetInnerHTML={{ __html: themeCss }} />
       </head>
       <body className="antialiased">
-        {children}
+        <AppProviders>
+          {children}
+        </AppProviders>
+        <NavigationProgress />
         <ScrollReset />
         <ToastProvider />
         {process.env.NODE_ENV === 'production' && <Analytics />}

@@ -3,6 +3,7 @@ import { getProfile } from '@/services/profiles'
 import { getUserRole } from '@/services/auth-server'
 import { ProfileForm } from '@/components/profile-form'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { NotificationsBell } from '@/components/notifications-bell'
 import { ArrowLeft, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 
@@ -34,7 +35,10 @@ export default async function ProfilePage() {
               </Link>
             )}
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <NotificationsBell />
+            <ThemeToggle />
+          </div>
         </header>
 
         {/* Título */}

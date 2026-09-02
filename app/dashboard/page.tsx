@@ -7,6 +7,7 @@ import { formatBolivars, moneyUsd, formatRate } from '@/lib/currency'
 import { ArrowLeft, BadgeDollarSign, ClipboardList } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { UserMenu } from '@/components/user-menu'
+import { NotificationsBell } from '@/components/notifications-bell'
 
 /**
  * Dashboard del cliente.
@@ -28,6 +29,7 @@ export default async function DashboardPage() {
         <header className="flex items-center justify-between gap-3 py-5">
           <a href="/" className="inline-flex items-center gap-2 text-sm"><ArrowLeft size={16} /> ilumaX</a>
           <div className="flex items-center gap-2">
+            <NotificationsBell />
             <ThemeToggle />
             <UserMenu />
           </div>

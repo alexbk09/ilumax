@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { getDespachos, getSolicitudesDespachables, getTransportistas } from '@/services/despachos'
 import { getAlmacenes } from '@/services/almacenes'
@@ -17,15 +17,15 @@ export default async function DespachosPage() {
   const canRead = await hasPermission(DESPACHOS_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader eyebrow="Logística" title="Despacho y Rutas" description="Organiza las entregas diarias y asigna transportistas." />
         <div className="p-5 sm:p-8">
           <div className="rounded-3xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   const [{ data: despachos }, { data: solicitudes }, { data: transportistas }, { data: almacenes }] = await Promise.all([
@@ -36,7 +36,7 @@ export default async function DespachosPage() {
   ])
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Logística"
         title="Despacho y Rutas"
@@ -50,6 +50,6 @@ export default async function DespachosPage() {
           initialAlmacenes={almacenes ?? []}
         />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

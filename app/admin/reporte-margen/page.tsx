@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { ReporteMargenManager } from '@/components/reporte-margen-manager'
 import { REPORTE_MARGEN_MODULE_SLUG } from '@/lib/constants'
@@ -15,19 +15,19 @@ export default async function ReporteMargenPage() {
   const canRead = await hasPermission(REPORTE_MARGEN_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader eyebrow="Contabilidad" title="Reporte de Margen Neto" description="Ganancia real del negocio restando el costo inicial." />
         <div className="p-5 sm:p-8">
           <div className="rounded-3xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Contabilidad"
         title="Reporte de Margen Neto"
@@ -36,6 +36,6 @@ export default async function ReporteMargenPage() {
       <div className="p-5 sm:p-8">
         <ReporteMargenManager />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { getAlmacenes, getProductosSimples } from '@/services/almacenes'
 import { AlmacenesManager } from '@/components/almacenes-manager'
@@ -17,7 +17,7 @@ export default async function AlmacenesPage() {
   const canRead = await hasPermission(ALMACENES_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader
           eyebrow="Logística"
           title="Almacenes"
@@ -28,8 +28,8 @@ export default async function AlmacenesPage() {
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   const [{ data: almacenes }, { data: productos }] = await Promise.all([
@@ -38,7 +38,7 @@ export default async function AlmacenesPage() {
   ])
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Logística"
         title="Almacenes"
@@ -47,6 +47,6 @@ export default async function AlmacenesPage() {
       <div className="p-5 sm:p-8">
         <AlmacenesManager initialAlmacenes={almacenes ?? []} initialProductos={productos ?? []} />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

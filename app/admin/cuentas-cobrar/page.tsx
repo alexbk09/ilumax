@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { getCuentasPorCobrar } from '@/services/cuentas-cobrar'
 import { CuentasCobrarManager } from '@/components/cuentas-cobrar-manager'
@@ -16,21 +16,21 @@ export default async function CuentasCobrarPage() {
   const canRead = await hasPermission(CUENTAS_COBRAR_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader eyebrow="Finanzas" title="Cuentas por Cobrar" description="Abonos, plazos de pago y límites de crédito." />
         <div className="p-5 sm:p-8">
           <div className="rounded-3xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   const { data: cuentas } = await getCuentasPorCobrar()
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Finanzas"
         title="Cuentas por Cobrar"
@@ -39,6 +39,6 @@ export default async function CuentasCobrarPage() {
       <div className="p-5 sm:p-8">
         <CuentasCobrarManager initialCuentas={cuentas ?? []} />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }

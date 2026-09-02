@@ -1,5 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
-import { AdminPageHeader, AdminShell } from '@/components/admin-shell'
+import { AdminPageHeader } from '@/components/admin-shell'
 import { hasPermission } from '@/services/roles'
 import { getTransportistas } from '@/services/transportistas'
 import { TransportistasManager } from '@/components/transportistas-manager'
@@ -15,21 +15,21 @@ export default async function TransportistasPage() {
   const canRead = await hasPermission(TRANSPORTISTAS_MODULE_SLUG, 'read')
   if (!canRead) {
     return (
-      <AdminShell>
+<>
         <AdminPageHeader eyebrow="Logística" title="Transportistas" description="Gestión de transportistas internos y externos." />
         <div className="p-5 sm:p-8">
           <div className="rounded-3xl border border-border bg-card p-8 text-center">
             <p className="text-sm text-muted-foreground">No tienes permiso para ver este módulo.</p>
           </div>
         </div>
-      </AdminShell>
-    )
+    
+</>)
   }
 
   const { data: transportistas } = await getTransportistas()
 
   return (
-    <AdminShell>
+<>
       <AdminPageHeader
         eyebrow="Logística"
         title="Transportistas"
@@ -38,6 +38,6 @@ export default async function TransportistasPage() {
       <div className="p-5 sm:p-8">
         <TransportistasManager initialTransportistas={transportistas ?? []} />
       </div>
-    </AdminShell>
-  )
+  
+</>)
 }
