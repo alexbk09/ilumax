@@ -11,6 +11,8 @@ import { SiteFooter } from '@/components/site-footer'
 import { CartDrawer } from '@/components/cart-drawer'
 import { useCart } from '@/hooks/use-cart'
 import { useExchangeRate } from '@/hooks/use-exchange-rate'
+import { useAgentAddToCart } from '@/hooks/use-agent-add-to-cart'
+import { AgentChat } from '@/components/agent-chat'
 import { DEFAULT_HOMEPAGE_CONFIG, normalizeHomepageConfig } from '@/lib/homepage-config'
 import { HomepageHero, StudioSection } from '@/components/homepage-sections'
 
@@ -90,6 +92,9 @@ export function Storefront({ initialProducts, settings }: { initialProducts?: Pr
   const products = initialProducts && initialProducts.length > 0 ? initialProducts : fallbackProducts
   const exchangeRate = useExchangeRate()
   const { cart, add, change, total, count, cartOpen, setCartOpen, submitting, requested, requestOrder } = useCart(exchangeRate)
+
+  // El Asistente IA agrega productos al carrito cuando ejecuta agregarAlCarrito.
+  useAgentAddToCart(add)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('Todos')
   const [selected, setSelected] = useState<Product | null>(null)
@@ -281,5 +286,7 @@ export function Storefront({ initialProducts, settings }: { initialProducts?: Pr
     )}
 
     <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} cart={cart} onChange={change} total={total} onSubmit={requestOrder} submitting={submitting} requested={requested} exchangeRate={exchangeRate} />
+
+    <AgentChat />
   </div>
 }

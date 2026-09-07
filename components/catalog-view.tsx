@@ -10,6 +10,8 @@ import { SiteFooter } from '@/components/site-footer'
 import { CartDrawer } from '@/components/cart-drawer'
 import { useCart } from '@/hooks/use-cart'
 import { useExchangeRate } from '@/hooks/use-exchange-rate'
+import { useAgentAddToCart } from '@/hooks/use-agent-add-to-cart'
+import { AgentChat } from '@/components/agent-chat'
 import { SearchableMultiSelect } from '@/components/ui/select-search'
 import { ProductGridSkeleton } from '@/components/ui/skeleton'
 
@@ -103,6 +105,10 @@ export function CatalogView({
   // Estado compartido con la portada: carrito funcional.
   const exchangeRate = useExchangeRate()
   const { cart, add, change, total: cartTotal, count, cartOpen, setCartOpen, submitting, requested, requestOrder } = useCart(exchangeRate)
+
+  // Escucha el Asistente IA: agrega al carrito si el agente emite agregarAlCarrito.
+  useAgentAddToCart(add)
+
 
   const activeFilterCount =
     (search ? 1 : 0) + (slug ? 1 : 0) + (minPrice || maxPrice ? 1 : 0) + selectedCategories.length + selectedMarcas.length
@@ -371,6 +377,7 @@ export function CatalogView({
         />
       )}
 
+      <AgentChat />
       <SiteFooter footer={footer} brand={{ name: brand?.name, address: brandAddress }} social={social} />
 
       <CartDrawer

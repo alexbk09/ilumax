@@ -95,6 +95,7 @@ tailwind.config = {
       <a class="toc-link" href="#cliente-carrito">6 · Carrito y solicitudes</a>
       <a class="toc-link" href="#cliente-dashboard">7 · Mi espacio (Dashboard)</a>
       <a class="toc-link" href="#cliente-perfil">8 · Mi Perfil</a>
+      <a class="toc-link" href="#cliente-asistente-ia">8b · Asistente de Compra IA</a>
       <div class="text-[13px] font-semibold px-3 pb-1 pt-4 text-slate-400 uppercase tracking-wide">Panel Administrativo</div>
       <a class="toc-link" href="#admin-acceso">9 · Acceso al panel</a>
       <a class="toc-link" href="#admin-resumen">10 · Resumen (KPIs)</a>
@@ -484,7 +485,37 @@ tailwind.config = {
         </div>
       </section>
 
-      <!-- ════════════════════ PARTE ADMIN ════════════════════ -->
+            <!-- ===== ASISTENTE DE COMPRA INTELIGENTE (IA) ===== -->
+      <section id="cliente-asistente-ia" class="section-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-8">
+        <p class="font-mono text-xs uppercase tracking-[.25em] text-cyan-600 dark:text-cyan-400">Secci&oacute;n 8b &middot; Cliente</p>
+        <h3 class="mt-2 text-2xl sm:text-3xl font-black tracking-tight">Asistente de Compra Inteligente (IA)</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">El chat flotante con la chispa, abajo a la derecha, consulta los productos reales de ilumaX y puede agregar al carrito lo que apruebes. Disponible en portada y cat&aacute;logo.</p>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <div>
+            <h4 class="font-bold text-sm">Lo que puedes pedirle</h4>
+            <div class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+              <p class="flex gap-3"><span class="step-chip">1</span><span><strong>Buscar productos reales:</strong> &quot;busca un panel LED 24W&quot;</span></p>
+              <p class="flex gap-3"><span class="step-chip">2</span><span><strong>Recomendar seg&uacute;n tu proyecto:</strong> &quot;luz para mi sala&quot;</span></p>
+              <p class="flex gap-3"><span class="step-chip">3</span><span><strong>Agregar al carrito:</strong> confirma y la IA lo agrega a tu solicitud</span></p>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm">C&oacute;mo funciona</h4>
+            <ol class="mt-4 list-decimal space-y-1 pl-5 text-sm text-slate-600 dark:text-slate-300">
+              <li>Se abre con el bot&oacute;n de la chispa.</li>
+              <li>Escribe en lenguaje natural lo que buscas.</li>
+              <li>Recibe tarjetas de productos con precio e imagen reales.</li>
+              <li>Termina tu compra como siempre con el carrito.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+
+
+
+<!-- ════════════════════ PARTE ADMIN ════════════════════ -->
       <div class="rounded-3xl bg-gradient-to-r from-blue-500/10 via-transparent to-blue-500/10 border border-blue-500/20 px-6 py-8 text-center">
         <p class="font-mono text-xs uppercase tracking-[.3em] text-blue-600 dark:text-cyan-400">Parte II</p>
         <h3 class="mt-2 text-2xl font-black tracking-tight">Panel Administrativo</h3>
